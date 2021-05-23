@@ -44,17 +44,15 @@ func (l *lister) ListProbeTargets(ctx context.Context, ing *v1alpha1.Ingress) ([
 	var results []status.ProbeTarget
 
 	cfg := config.FromContext(ctx)
-
 	visibilityKeys := cfg.Contour.VisibilityKeys
+
 	for key, hosts := range ingress.HostsPerVisibility(ing, visibilityKeys) {
 		port, scheme := int32(80), "http"
 
-		switch ing.Spec.HTTPOption {
-		case v1alpha1.HTTPOptionRedirected:
-			// Probe external servce with https.
-			if !visibilityKeys["ClusterLocal"].Has(key) {
-				port, scheme = 443, "https"
-			}
+		// Probe external servce with https.
+		if ing.Spec.HTTPOption == v1alpha1.HTTPOptionRedirected &&
+			!visibilityKeys["ClusterLocal"].Has(key) {
+			port, scheme = 443, "https"
 		}
 
 		namespace, name, err := cache.SplitMetaNamespaceKey(key)
