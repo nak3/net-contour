@@ -48,6 +48,7 @@ func MakeEndpointProbeIngress(ctx context.Context, ing *v1alpha1.Ingress, previo
 		},
 		Spec: v1alpha1.IngressSpec{
 			DeprecatedVisibility: ing.Spec.DeprecatedVisibility, // Copy the top-level visibility.
+			HTTPOption:           v1alpha1.HTTPOptionEnabled,    // Probeing endpoint with HTTP is enough.
 		},
 	}
 
